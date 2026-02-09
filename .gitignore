@@ -1,21 +1,56 @@
-# .gitignore
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
+# ===============================
+# Python / Virtual Environments
+# ===============================
+.venv/
 env/
 venv/
-.venv/
-*.log
+.Python
+
+# ===============================
+# Python cache / build artifacts
+# ===============================
+__pycache__/
+*.py[cod]
+*.so
+*$py.class
+
+# ===============================
+# Logs
+# ===============================
 logs/*.log
-results/*.json
-results/*.csv
+*.log
+
+# ===============================
+# Experiment results policy
+# ===============================
+# Ignore ALL raw experiment outputs by default
+results/**
+!results/summary.csv
+!results/**/analysis.md
+!results/**/report.md
+!results/final_analysis/**
+!results/week*/analysis.md
+
+# If you later want plots tracked:
+# !results/**/charts/**
+# !results/**/*.png
+
+# ===============================
+# Test / coverage
+# ===============================
 .pytest_cache/
 .coverage
 htmlcov/
+
+# ===============================
+# IDE / Editor
+# ===============================
 .idea/
 .vscode/
 *.swp
 *.swo
+
+# ===============================
+# OS junk
+# ===============================
 .DS_Store
