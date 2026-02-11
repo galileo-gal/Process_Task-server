@@ -1,101 +1,113 @@
 # Changelog
 
-All notable changes to the OS Concurrency Study – Adaptive Task Execution Server project will be documented in this
-file.
+All notable changes to this project are documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+This project follows a **chronological engineering log**, tracking architectural decisions, tooling changes, and experiment-related updates.  
+Dates reflect when changes were committed to `main`.
 
 ---
 
-## [0.4.0] - 2024-01-XX
+## [Unreleased]
+### Planned
+- FIFO vs Priority scheduling implementation inside dispatcher
+- Scheduling policy benchmarking under mixed workloads
+- Waiting-time, starvation, and fairness analysis
+- Final experiment aggregation and report writing
+
+---
+
+## [2026-02-11] – Infrastructure Stabilization & Cross-Platform Setup
 
 ### Added
-
-- Comprehensive documentation structure in `docs/` directory
-    - `docs/architecture.md` – System design and component flow
-    - `docs/api.md` – API endpoint specifications
-    - `docs/experiments.md` – Experiment execution guidelines
-    - `docs/results.md` – Results interpretation guide
-    - `docs/README.md` – Documentation index
-- Experiment infrastructure with YAML configuration (`config/experiment.yaml`)
-- Results directory structure for JSONL, CSV, and plot outputs
-- Analysis scripts in `experiments/analysis/` for data summarization and visualization
+- WSL2-based Linux execution environment for OS-level experiments
+- SSH-based GitHub authentication for reliable cross-platform Git operations
+- `requirements.lock.linux.txt` and `requirements.lock.windows.txt` for platform-specific dependency tracking
+- Structured documentation set under `docs/`:
+  - `architecture.md`
+  - `api.md`
+  - `experiments.md`
+  - `results.md`
+- Scheduler module scaffolding:
+  - `src/scheduler/fifo.py`
+  - `src/scheduler/priority.py`
+- Dispatcher abstraction (`src/dispatch/dispatcher.py`) to decouple scheduling from execution
+- Core job abstraction (`src/core/job.py`) to unify task metadata (type, priority, timestamps)
 
 ### Changed
+- Normalized line endings to **LF** across the repository using `.gitattributes`
+- Updated `requirements.txt` to support ML workloads:
+  - Added `scikit-learn`, `scipy`, `joblib`
+  - Constrained `numpy` to `<2.0` for cross-platform compatibility
+- Refactored logging utilities for structured, experiment-safe logging
+- Refined metrics collection utilities for OS-oriented measurements (CPU time, context switches)
 
-- Enhanced README.md with complete project overview, architecture diagram, and setup instructions
-- Organized project structure with clear separation of concerns
-
----
-
-## [0.3.0] - 2024-01-XX
-
-### Added
-
-- Metrics collection system using `psutil` for OS-level profiling
-    - Per-request latency tracking
-    - Waiting time measurement
-    - CPU time (user/system) monitoring
-    - Memory usage (RSS delta) tracking
-    - Context switch delta measurement
-- Structured logging configuration (`config/logging_config.py`)
-- Experiment logging utilities in `src/utils/`
-- JSONL-based raw data storage for reproducibility
+### Fixed
+- Git line-ending conflicts between Windows and Linux environments
+- Broken virtual environment creation on Windows and WSL
+- NumPy build failures on Windows due to missing compilers
+- Git permission and authentication issues (HTTPS → SSH migration)
+- Accidental nested repository creation during WSL setup
 
 ---
 
-## [0.2.0] - 2024-01-XX
+## [2026-02-10] – Project Structure & Architectural Finalization
 
 ### Added
-
-- Multiple server implementations:
-    - Flask baseline server (single-threaded)
-    - Flask threaded server (multi-threaded)
-    - Flask process server (multi-process)
-    - FastAPI async server (asynchronous)
-- Executor implementations in `src/executors/`:
-    - Thread-based executor
-    - Process-based executor
-    - Async executor
-- Dispatcher layer (`src/dispatch/`) bridging scheduler and executors
-- Load testing integration with Locust
-
----
-
-## [0.1.0] - 2024-01-XX
-
-### Added
-
-- Core job abstraction in `src/core/`
-- Scheduling policies in `src/scheduler/`:
-    - FIFO (First-In-First-Out) scheduler
-    - Priority-based scheduler with configurable priorities
-- Workload implementations in `src/workloads/`:
-    - CPU-bound workloads (Fibonacci, matrix multiplication)
-    - IO-bound workloads (file operations, sleep simulation)
-    - Memory-bound workloads (large array processing)
-    - Mixed workloads (CPU→IO and IO→CPU)
-    - ML workloads (lightweight Linear Regression prediction)
-- Parameterized workload configuration for controlled scaling
-- Project structure with organized directories:
-    - `src/` for source code
-    - `config/` for configuration files
-    - `logs/` for log outputs
-    - `experiments/` for experiment scripts
-    - `results/` for experiment outputs
+- Finalized project directory structure separating:
+  - workloads
+  - schedulers
+  - executors
+  - servers
+  - utilities
+- Initial workload implementations:
+  - CPU-bound workloads
+  - IO-bound workloads
+  - Memory-bound workloads
+  - Mixed workloads
+  - ML inference workload (predict-only)
+- Experiment analysis utilities:
+  - `experiments/analysis/plot.py`
+  - `experiments/analysis/summarize.py`
+- Centralized experiment configuration (`config/experiment.yaml`)
 
 ### Changed
-
-- Initial project setup with virtual environment support
-- Requirements specification in `requirements.txt`
+- Replaced URL-parameter APIs with JSON POST-based execution
+- Reduced workload sizes to laptop-safe bounds
+- Reworked metrics to use **delta-based** measurement (before/after snapshots)
 
 ---
 
-## [0.0.1] - 2024-01-XX
+## [2026-02-09] – Phase 1 Blueprint & Academic Alignment
 
 ### Added
+- Phase 1 OS Concurrency Study blueprint
+- Week-by-week experiment plan covering:
+  - Baseline execution
+  - Multi-threading
+  - Multi-processing
+  - Async IO
+- Explicit scheduling policy requirement (FIFO vs Priority)
+- OS-level metrics plan using `psutil` (Windows/WSL compatible)
 
-- Initial project repository structure
-- Basic README with project concept
-- Git repository initialization
-- `.gitkeep` files for empty directories (`logs/`)
+### Changed
+- Shifted focus from capstone-style breadth to **OS scheduling and concurrency depth**
+- Explicitly scoped async workloads to IO-only tasks
+- Reframed ML workloads as inference-only to avoid training bias
+
+---
+
+## [2026-02-08] – Initial Repository Setup
+
+### Added
+- Initial repository with Flask and FastAPI servers
+- Basic executor abstractions (thread, process, async)
+- Logging and metrics utility scaffolding
+- Base `.gitignore` for Python, logs, and build artifacts
+
+---
+
+## Notes
+- This project is intentionally developed across **Windows (development)** and **Linux/WSL (execution & profiling)** environments.
+- Platform-specific limitations (e.g., `perf` availability) are documented explicitly and treated as experimental constraints, not omissions.
+
+---
